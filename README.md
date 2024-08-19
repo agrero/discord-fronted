@@ -1,1 +1,1 @@
-# discord-fronted
+# discord-frontend
