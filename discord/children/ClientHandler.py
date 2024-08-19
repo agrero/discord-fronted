@@ -1,11 +1,19 @@
-from sudoku.helper.api_helper import get_command
+
+
 import requests
 
-from sudoku.schemas.api import CommandIn
 from fastapi.encoders import jsonable_encoder
 
+# Add this function to helper
+from helper import get_command
+
+# need this import somehow (can just implement when its all modularized)
+
+# SUDOKU
 from sudoku.classes.game.Board import Board
 
+# SCHEMAS
+from sudoku.schemas.api import CommandIn
 
 # MANIUPLATIONS SHOULD HAPPEN NOT HERE
 # ALSO TRY AND SLIM THIS DOWN AND MAKE IT PART OF THE CUSTOMCLIENT

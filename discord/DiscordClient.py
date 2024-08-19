@@ -1,7 +1,6 @@
 import discord
 
-from frontend.discord.children.ClientHandler import ClientHandler
-
+from children.ClientHandler import ClientHandler
 
 
 class CustomClient(discord.Client):
