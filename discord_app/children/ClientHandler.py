@@ -1,33 +1,17 @@
-import requests
 
-from fastapi.encoders import jsonable_encoder
-
-# Add this function to helper
-from helper import get_command
-
-# need this import somehow (can just implement when its all modularized)
-
-# SUDOKU
-# from sudoku.classes.game.Board import Board
-# -> REPLACEMENT
 from .handlers.BoardHandler import BoardHandler
 from .handlers.RequestHandler import RequestHandler
 
-# SCHEMAS
-# from sudoku.schemas.api import CommandIn
-# -> REPLACEMENT
-from .schemas import discord
 
-# MANIUPLATIONS SHOULD HAPPEN NOT HERE
-# ALSO TRY AND SLIM THIS DOWN AND MAKE IT PART OF THE CUSTOMCLIENT
 class ClientHandler(
-    RequestHandler, BoardHandler
+    RequestHandler, # requests related methods and atts
+    BoardHandler # board related methods and atts
     ):
     def __init__(self) -> None:
         super().__init__(self)
 
 
-    async def get_board(self) -> requests.json :
+    async def get_board(self):
         """
         Top level handler for board post responses
         

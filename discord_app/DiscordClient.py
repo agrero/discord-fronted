@@ -1,6 +1,7 @@
 import discord
-from helper import get_command
-from children.ClientHandler import ClientHandler
+from .helper import get_command
+from .children.ClientHandler import ClientHandler
+from discord_app.GuildManager import GuildManager
 
 
 class CustomClient(discord.Client):
@@ -48,6 +49,79 @@ class CustomClient(discord.Client):
             handler = ClientHandler()
             response = await handler.get_boardstate(message, url)
             await message.channel.send(response.json()['puzzle'])
+
+        if message.content.startswith('$t'):
+            
+            # NEED TO ADD CHECK SO YOU CAN'T MAKE MULTIPLE TEXT 
+            # CHANNELS OF THE SAME NAME
+
+            # should insert some verification here
+            # # user enters their key
+            # 
+            # # user message is read 
+            # 
+            # # verification request is sent
+            # 
+            # # if approved: 
+            # # # create secret text channel for user
+            #  
+            # # if not approved:
+            # # # do nothing
+
+
+            ####################
+            # MESSAGE HANDLING #
+            ####################
+
+            # key input: $t {key}
+            key = message.content[3:]
+            
+            ########################
+            # MESSAGE VERIFICATION #
+            ########################
+
+            # send database request
+            
+
+            ####################
+            # MESSAGE RESPONSE #
+            ####################
+            
+            # overwrites
+            overwrites = {
+                message.author.guild.default_role : discord.PermissionOverwrite(
+                    read_messages=False
+                    # **obj_model_dump works here
+                ),
+                message.author.guild.me: discord.PermissionOverwrite(
+                    read_messages=True
+                )
+            }
+
+            # make channel in specific category
+            await message.author.guild.create_text_channel(
+                name=f'test_{message.author.name}',
+                overwrites=overwrites,
+                category = discord.utils.get(
+                    message.author.guild.categories,
+                    name='Testing Environments'
+                )) # get Text Channels category
+            
+            await message.delete()
+
+            # # init guild manager
+            # manager = GuildManager(id=message.author.guild.id)
+            # # print(message)
+            
+            # # create default_guild test
+            # await manager.make_text_channel(channel_name='secret')
+
+            # # create non default guild test
+            # await manager.make_text_channel(
+            #     guild_name='non_secret', 
+            #     secret=False
+            # )
+
 
         # for testing 
         if message.content.startswith('$test'):
