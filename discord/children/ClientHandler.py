@@ -1,5 +1,3 @@
-
-
 import requests
 
 from fastapi.encoders import jsonable_encoder
@@ -10,62 +8,50 @@ from helper import get_command
 # need this import somehow (can just implement when its all modularized)
 
 # SUDOKU
-from sudoku.classes.game.Board import Board
+# from sudoku.classes.game.Board import Board
+# -> REPLACEMENT
+from .handlers.BoardHandler import BoardHandler
+from .handlers.RequestHandler import RequestHandler
 
 # SCHEMAS
-from sudoku.schemas.api import CommandIn
+# from sudoku.schemas.api import CommandIn
+# -> REPLACEMENT
+from .schemas import discord
 
 # MANIUPLATIONS SHOULD HAPPEN NOT HERE
 # ALSO TRY AND SLIM THIS DOWN AND MAKE IT PART OF THE CUSTOMCLIENT
-class ClientHandler:
+class ClientHandler(
+    RequestHandler, BoardHandler
+    ):
     def __init__(self) -> None:
+        super().__init__(self)
 
-        # GET api calls
-        self.get_methods = ['get_keys', 'puzzle', 'bt_predict']
-        self.post_methods = ['set_tile', 'make_keys', 'create_user']
 
-    async def get_boardstate(self, message, url:str) -> requests.Response:
+    async def get_board(self) -> requests.json :
         """
-        Unpack Commands and send 
-        a request to the database API
+        Top level handler for board post responses
+        
+        ! NOTE
 
-        message: a message in the form of an on_message discord 
-            response
-        url: string url to send 
+        I think at some point we should make this return the content
+        of post instead of the post 
 
-        returns: requests.Response
+        I think that fits thematically with assess_method 
+        being inherited from the post handler
         """
-        commands = get_command(message.content[2:])
-        
-        if commands[0] in self.get_methods:
-            post = requests.get(
-                url=f'{url}/{'/'.join(commands)}', #URL should unwrap all commands
-                headers={'Content-Type':'application/json'},
-                json=jsonable_encoder(
-                    CommandIn(
-                        commands=commands,
-                        user=message.author.name,
-                        user_id=message.author.id,
-                        message_id=message.id,
-                        guild_id=message.guild.id
-                )))
-            return post
 
-        elif commands[0] in self.post_methods:
-            post = requests.post(
-                url=f'{url}/{'/'.join(commands)}', #URL should unwrap all commands
-                headers={'Content-Type':'application/json'},
-                json=jsonable_encoder(
-                    CommandIn(
-                        commands=commands,
-                        user=message.author.name,
-                        user_id=message.author.id,
-                        message_id=message.id,
-                        guild_id=message.guild.id
-                )))
-            
-            return post
-        
+        try:
+            post = self.assess_method(self.commands[-1])
+        except:
+            raise ValueError("Object missing components")
+
+        # need to figure out what piece is the board
+        # after we determine what piece is the board,
+        # we need to make this method return it fancy
+
+        # if the functinal method works here, we 
+        # jsut need to make it return whatever we want
+        return post.json()
 
     async def send_board(self, message, url:str) -> None:
         """
@@ -78,9 +64,10 @@ class ClientHandler:
 
         returns: None
         """
-        # post to get boardstate 
-        post = self.get_boardstate(message=message, url=url)
-        await message.channel.send(Board(
-            board=post.json()['solved_board']
-        ).pretty_rep())
+        
+        # post.json() returns just a json
+        await message.channel.send(self.get_board()) 
+        
+
+
 
