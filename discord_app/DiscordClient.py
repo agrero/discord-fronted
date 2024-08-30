@@ -91,48 +91,43 @@ class CustomClient(discord.Client):
             )
 
             # extract key
+            
+            response = handler.assess_method('get')
 
             # verify key
             
+            verify = response.key == key
+
             ####################
             # MESSAGE RESPONSE #
             ####################
             
             # overwrites
-            overwrites = {
-                message.author.guild.default_role : discord.PermissionOverwrite(
-                    read_messages=False
-                    # **obj_model_dump works here
-                ),
-                message.author.guild.me: discord.PermissionOverwrite(
-                    read_messages=True
-                )
-            }
 
-            # make channel in specific category
-            await message.author.guild.create_text_channel(
-                name=f'test_{message.author.name}',
-                overwrites=overwrites,
-                category = discord.utils.get(
-                    message.author.guild.categories,
-                    name='Testing Environments'
-                )) # get Text Channels category
-            
+            if verify:
+                overwrites = {
+                    message.author.guild.default_role : discord.PermissionOverwrite(
+                        read_messages=False
+                        # **obj_model_dump works here
+                    ),
+                    message.author.guild.me: discord.PermissionOverwrite(
+                        read_messages=True
+                    )
+                }
+
+                # make channel in specific category
+                await message.author.guild.create_text_channel(
+                    name=f'test_{message.author.name}',
+                    overwrites=overwrites,
+                    category = discord.utils.get(
+                        message.author.guild.categories,
+                        name='Testing Environments'
+                    )) # get Text Channels category
+
+            else:
+                message.channel.send('Invalid Key')    
+                            
             await message.delete()
-
-            # # init guild manager
-            # manager = GuildManager(id=message.author.guild.id)
-            # # print(message)
-            
-            # # create default_guild test
-            # await manager.make_text_channel(channel_name='secret')
-
-            # # create non default guild test
-            # await manager.make_text_channel(
-            #     guild_name='non_secret', 
-            #     secret=False
-            # )
-
 
         # for testing 
         if message.content.startswith('$test'):
