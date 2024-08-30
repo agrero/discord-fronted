@@ -2,6 +2,7 @@ import discord
 from .helper import get_command
 from .children.ClientHandler import ClientHandler
 from discord_app.GuildManager import GuildManager
+from .children.handlers.RequestHandler import RequestHandler
 
 
 class CustomClient(discord.Client):
@@ -56,14 +57,12 @@ class CustomClient(discord.Client):
             # CHANNELS OF THE SAME NAME
 
             # should insert some verification here
-            # # user enters their key
             # 
-            # # user message is read 
             # 
             # # verification request is sent
             # 
             # # if approved: 
-            # # # create secret text channel for user
+            # # # create secret text handler = ClientHandler()channel for user
             #  
             # # if not approved:
             # # # do nothing
@@ -74,7 +73,7 @@ class CustomClient(discord.Client):
             ####################
 
             # key input: $t {key}
-            key = message.content[3:]
+            key = message.content.split(' ')[1]
             
             ########################
             # MESSAGE VERIFICATION #
@@ -82,7 +81,19 @@ class CustomClient(discord.Client):
 
             # send database request
             
+            # get user
+            handler = ClientHandler(
+                json={
+                    'discord_id' : message.author.id,
+                    'username' : message.author.name
+                },
+                commands=['get', 'user']
+            )
 
+            # extract key
+
+            # verify key
+            
             ####################
             # MESSAGE RESPONSE #
             ####################

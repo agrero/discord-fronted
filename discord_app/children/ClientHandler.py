@@ -37,7 +37,7 @@ class ClientHandler(
         # jsut need to make it return whatever we want
         return post.json()
 
-    async def send_board(self, message, url:str) -> None:
+    async def send_board(self, message) -> None:
         """
         sends board state to discord utilizing get_boardstate
         method.
@@ -51,6 +51,7 @@ class ClientHandler(
         
         # post.json() returns just a json
         await message.channel.send(self.get_board()) 
+
         
 
 
